@@ -3,6 +3,20 @@
 **Blink Speech** is a browser-based application that transforms intentional blink patterns and gaze gestures into spoken phrases. It operates entirely client-side, ensuring user privacy with a zero-install, anonymous-first approach. 👁️‍🗨️ → 🗣️
 
 ---
+## 🛠 **Tech Stack**
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![WebGazer.js](https://img.shields.io/badge/WebGazer.js-FF6F00?style=for-the-badge&logo=javascript&logoColor=white)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![localForage](https://img.shields.io/badge/localForage-FFA500?style=for-the-badge&logo=html5&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-593D88?style=for-the-badge&logo=react&logoColor=white)
+![Web Speech API](https://img.shields.io/badge/Web_Speech_API-FF4081?style=for-the-badge&logo=googlechrome&logoColor=white)
+
+---
+
 
 ## Core Concepts
 
@@ -153,17 +167,18 @@ export function speak(text: string, lang = 'en-US') {
 
 ## Tech Stack
 
-| Logo | Technology | Description |
-| :---: | :--- | :--- |
-| <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextjs-logo.svg" alt="Next.js" width="40"/> | **Next.js 14** | React framework for building fast, production-grade web applications. |
-| <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" width="40"/> | **React 18** | Component-based JavaScript library for building interactive UIs. |
-| <img src="https://raw.githubusercontent.com/TonyGermaneri/canvas-datagrid/master/images/webgazer-icon.png" alt="WebGazer.js" width="40"/> | **WebGazer.js** | In-browser gaze tracking library used as a fallback. |
-| <img src="https://ai.google.dev/static/images/mediapipe_logo.png" alt="MediaPipe" width="40"/> | **MediaPipe FaceLandmarker** | High-fidelity face & iris landmark detection for blink/gaze tracking. |
-| <img src="https://avatars.githubusercontent.com/u/54469796?s=200&v=4" alt="Supabase" width="40"/> | **Supabase** | Open-source backend for storing user mappings and session data. |
-| <img src="https://raw.githubusercontent.com/localForage/localForage/master/logo.png" alt="localForage" width="40"/> | **localForage** | Wrapper around IndexedDB for client-side data persistence. |
-| <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Tailwind_CSS_Logo.svg" alt="Tailwind CSS" width="40"/> | **Tailwind CSS** | Utility-first CSS framework for building custom designs quickly. |
-| <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Zustand-icon.png" alt="Zustand" width="40"/> | **Zustand** | Lightweight state management for React apps. |
-| <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Google_Speech_Logo.png" alt="Web Speech API" width="40"/> | **Web Speech API** | Native browser Text-to-Speech (TTS) API for speech synthesis. |
+| Technology | Description |
+| :--- | :--- |
+| **Next.js 14** | React framework for building fast, production-grade web applications. |
+| **React 18** | Component-based JavaScript library for building interactive UIs. |
+| **WebGazer.js** | In-browser gaze tracking library used as a fallback. |
+| **MediaPipe FaceLandmarker** | High-fidelity face & iris landmark detection for blink/gaze tracking. |
+| **Supabase** | Open-source backend for storing user mappings and session data. |
+| **localForage** | Wrapper around IndexedDB for client-side data persistence. |
+| **Tailwind CSS** | Utility-first CSS framework for building custom designs quickly. |
+| **Zustand** | Lightweight state management for React apps. |
+| **Web Speech API** | Native browser Text-to-Speech (TTS) API for speech synthesis. |
+
 
 
 -----
