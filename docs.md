@@ -153,6 +153,19 @@ export function speak(text: string, lang = 'en-US') {
 
 ## Tech Stack
 
+| Logo | Technology | Description |
+| :---: | :--- | :--- |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextjs-logo.svg" alt="Next.js" width="40"/> | **Next.js 14** | React framework for building fast, production-grade web applications. |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" width="40"/> | **React 18** | Component-based JavaScript library for building interactive UIs. |
+| <img src="https://raw.githubusercontent.com/TonyGermaneri/canvas-datagrid/master/images/webgazer-icon.png" alt="WebGazer.js" width="40"/> | **WebGazer.js** | In-browser gaze tracking library used as a fallback. |
+| <img src="https://ai.google.dev/static/images/mediapipe_logo.png" alt="MediaPipe" width="40"/> | **MediaPipe FaceLandmarker** | High-fidelity face & iris landmark detection for blink/gaze tracking. |
+| <img src="https://avatars.githubusercontent.com/u/54469796?s=200&v=4" alt="Supabase" width="40"/> | **Supabase** | Open-source backend for storing user mappings and session data. |
+| <img src="https://raw.githubusercontent.com/localForage/localForage/master/logo.png" alt="localForage" width="40"/> | **localForage** | Wrapper around IndexedDB for client-side data persistence. |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Tailwind_CSS_Logo.svg" alt="Tailwind CSS" width="40"/> | **Tailwind CSS** | Utility-first CSS framework for building custom designs quickly. |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Zustand-icon.png" alt="Zustand" width="40"/> | **Zustand** | Lightweight state management for React apps. |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Google_Speech_Logo.png" alt="Web Speech API" width="40"/> | **Web Speech API** | Native browser Text-to-Speech (TTS) API for speech synthesis. |
+
+
 -----
 
 ## Resources
