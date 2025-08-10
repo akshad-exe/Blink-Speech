@@ -133,4 +133,4 @@ After our prototype:
 ---
 
 
-For more detailed technical information, **visit our [Documentation](#)**.
+For more detailed technical information, **visit our [Documentation](https://github.com/akshad-exe/Blink-Speech/blob/main/docs.md)**.
