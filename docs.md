@@ -163,23 +163,6 @@ export function speak(text: string, lang = 'en-US') {
 }
 ```
 
------
-
-## Tech Stack
-
-| Technology | Description |
-| :--- | :--- |
-| **Next.js 14** | React framework for building fast, production-grade web applications. |
-| **React 18** | Component-based JavaScript library for building interactive UIs. |
-| **WebGazer.js** | In-browser gaze tracking library used as a fallback. |
-| **MediaPipe FaceLandmarker** | High-fidelity face & iris landmark detection for blink/gaze tracking. |
-| **Supabase** | Open-source backend for storing user mappings and session data. |
-| **localForage** | Wrapper around IndexedDB for client-side data persistence. |
-| **Tailwind CSS** | Utility-first CSS framework for building custom designs quickly. |
-| **Zustand** | Lightweight state management for React apps. |
-| **Web Speech API** | Native browser Text-to-Speech (TTS) API for speech synthesis. |
-
-
 
 -----
 
