@@ -166,15 +166,24 @@ export function speak(text: string, lang = 'en-US') {
 
 -----
 
-## Resources
+## Resources Table
 
-| Component | Description & Official Link |
-| :--- | :--- |
-| **MediaPipe FaceLandmarker** | High-fidelity face/iris landmarks for robust EAR calculation. <br/> [ai.google.dev/edge/mediapipe](https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/web_js) |
-| **WebGazer.js** | In-browser gaze tracking, used as a fallback. <br/> [webgazer.cs.brown.edu](https://webgazer.cs.brown.edu) |
-| **Web Speech API** | Browser-native Text-to-Speech (TTS) engine. <br/> [developer.mozilla.org](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) |
-| **Supabase** | Backend for storing user pattern mappings and logs. <br/> [supabase.com](https://supabase.com) |
-| **localForage** | Wrapper for IndexedDB for persistent client-side storage. <br/> [localforage.github.io/localForage](https://localforage.github.io/localForage/) |
-| **EAR Blink Detection** | Academic paper on the Eye Aspect Ratio method. <br/> [vision.fe.uni-lj.si](http://vision.fe.uni-lj.si/cvww2016/proceedings/papers/05.pdf) |
+| Category | Name & Link | Purpose |
+|----------|-------------|---------|
+| **Eye Tracking** | [WebGazer.js](https://webgazer.cs.brown.edu/) | Browser-based gaze tracking using webcam, works without extra hardware. |
+| **Eye Tracking** | [MediaPipe FaceLandmarker (Web)](https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/web_js) | High-fidelity facial & iris landmark detection in browser via TensorFlow.js. |
+| **Blink Detection** | [Eye Aspect Ratio (EAR) Method](https://www.pyimagesearch.com/2017/04/24/eye-blink-detection-opencv-python-dlib/) | Technique for blink detection using facial landmarks and aspect ratio. |
+| **Blink Detection Example Code** | [LearnOpenCV Eye Blink Detection](https://github.com/spmallick/learnopencv/tree/master/Eye-Blink-Detection) | OpenCV + Dlib implementation of EAR blink detection. |
+| **Speech Output** | [Web Speech API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | Browser-native Text-to-Speech and speech recognition APIs. |
+| **Speech Output (Python)** | [gTTS – Google Text-to-Speech](https://github.com/pndurette/gTTS) | Server-side text-to-speech library in Python. |
+| **Frontend Framework** | [Next.js](https://nextjs.org/) | React framework for building full-stack web apps. |
+| **State Management** | [Zustand](https://zustand-demo.pmnd.rs/) | Lightweight state management library for React. |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework for styling. |
+| **Persistent Storage** | [localForage](https://localforage.github.io/localForage/) | Wrapper for IndexedDB, WebSQL, and localStorage for storing calibration data. |
+| **Backend & DB** | [Supabase](https://supabase.com/) | Backend-as-a-service with PostgreSQL, authentication, and serverless functions. |
+| **Real-time Communication** | [Supabase Realtime](https://supabase.com/docs/guides/realtime) | WebSocket-based real-time updates from Supabase. |
+| **Optional SMS API** | [Twilio SMS API](https://www.twilio.com/docs/sms) | Send phrases as SMS messages programmatically. |
+| **Computer Vision Library** | [OpenCV.js](https://docs.opencv.org/4.x/d5/d10/tutorial_js_root.html) | JavaScript version of OpenCV for image/video analysis. |
+| **ML Models in JS** | [TensorFlow.js](https://www.tensorflow.org/js) | Run ML models directly in the browser. |
+| **Gesture Tracking Example** | [GazeTracking (Python)](https://github.com/antoinelame/GazeTracking) | Eye movement tracking library for Python, useful for prototyping. |
 
-```
