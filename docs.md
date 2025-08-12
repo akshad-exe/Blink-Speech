@@ -1,4 +1,4 @@
-# Blink Speech (MindLink): Technical Documentation
+# Blink Speech: Technical Documentation
 
 **Blink Speech** is a browser-based application that transforms intentional blink patterns and gaze gestures into spoken phrases. It operates entirely client-side, ensuring user privacy with a zero-install, anonymous-first approach. 👁️‍🗨️ → 🗣️
 

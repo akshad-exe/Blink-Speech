@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Warm, accessible color palette for MindLink */
+    /* Warm, accessible color palette for Blink Speech */
     --background: 12 25% 97%;
     --foreground: 222.2 84% 4.9%;
 

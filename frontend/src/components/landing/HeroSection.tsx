@@ -22,8 +22,8 @@ const HeroSection = () => {
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-primary font-medium">
-                <Heart className="w-5 h-5" />
-                <span>MindLink Technology</span>
+                <Eye className="w-5 h-5" />
+                <span>Blink Speech Technology</span>
               </div>
               
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight">

@@ -1,4 +1,4 @@
-# Blink Speech (MindLink)
+# Blink Speech
 
 > **Turning blinks and gaze into voice – communication without boundaries.**
 
@@ -18,7 +18,7 @@
 
 ## 🌍 Vision
 
-Blink Speech (MindLink) was born from a simple yet powerful idea:  
+Blink Speech was born from a simple yet powerful idea:  
 **Everyone deserves a voice.**
 
 By turning intentional blink patterns and gaze gestures into spoken words, we enable communication for people who cannot speak or type — whether due to paralysis, neurological disorders, or temporary medical conditions.

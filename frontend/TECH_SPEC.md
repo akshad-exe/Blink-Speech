@@ -1,5 +1,5 @@
 # **Technical Specification Document (Tech Spec)**
-## **Project Name:** Blink Speech (MindLink)
+## **Project Name:** Blink Speech
 **Version:** 1.0  
 **Date:** 11-Aug-2025  
 **Author:** Akshad Jogi  
@@ -7,7 +7,7 @@
 ---
 
 ## **1. System Overview**
-Blink Speech (MindLink) is a client-side, browser-based assistive communication tool that translates blink patterns and gaze gestures into spoken phrases. It uses computer vision for eye tracking and speech synthesis for communication, with full offline support and optional cloud sync.
+Blink Speech is a client-side, browser-based assistive communication tool that translates blink patterns and gaze gestures into spoken phrases. It uses computer vision for eye tracking and speech synthesis for communication, with full offline support and optional cloud sync.
 
 ---
 
