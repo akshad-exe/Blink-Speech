@@ -46,22 +46,7 @@ export const GestureGrid = ({
   detectedGesture,
   onGestureDetected
 }: GestureGridProps) => {
-  const [simulationMode, setSimulationMode] = useState(true);
-
-  // Simulate gesture detection for demo purposes
-  useEffect(() => {
-    if (simulationMode) {
-      const gestures = Object.keys(gestureMapping);
-      let currentIndex = 0;
-
-      const interval = setInterval(() => {
-        onGestureDetected(gestures[currentIndex]);
-        currentIndex = (currentIndex + 1) % gestures.length;
-      }, 3000);
-
-      return () => clearInterval(interval);
-    }
-  }, [simulationMode, gestureMapping, onGestureDetected]);
+  // Removed simulation mode - no auto-activation
 
   const handleGestureClick = (gesture: string) => {
     onGestureDetected(gesture);
@@ -72,7 +57,7 @@ export const GestureGrid = ({
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-foreground">Available Gestures</h2>
         <Badge variant="outline" className="text-xs">
-          {simulationMode ? "Demo Mode" : "Live Detection"}
+          Live Detection
         </Badge>
       </div>
 
