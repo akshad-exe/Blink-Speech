@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { GestureGrid } from "@/components/session/GestureGrid";
 import { PhrasePreview } from "@/components/session/PhrasePreview";
@@ -50,11 +50,49 @@ const Session = () => {
 
     // Request camera permission
     requestCameraPermission();
+    
+    // Set up permission change listener
+    const checkPermission = async () => {
+      try {
+        const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
+        if (permissions.state === 'granted') {
+          setCameraPermission('granted');
+        } else if (permissions.state === 'denied') {
+          setCameraPermission('denied');
+        }
+        
+        permissions.addEventListener('change', () => {
+          if (permissions.state === 'granted') {
+            setCameraPermission('granted');
+          } else if (permissions.state === 'denied') {
+            setCameraPermission('denied');
+          }
+        });
+      } catch (error) {
+        console.error('Error checking camera permission:', error);
+      }
+    };
+    
+    checkPermission();
   }, [navigate, toast]);
 
   const requestCameraPermission = async () => {
     try {
+      console.log('Requesting camera permission...');
       setCameraPermission('pending');
+      
+      // Check if we already have permission
+      const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
+      console.log('Current permission state:', permissions.state);
+      
+      if (permissions.state === 'granted') {
+        console.log('Permission already granted');
+        setCameraPermission('granted');
+        return;
+      }
+      
+      console.log('Requesting getUserMedia...');
+      // Request camera permission by getting user media
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           width: { ideal: 640 },
@@ -63,10 +101,16 @@ const Session = () => {
         } 
       });
       
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setCameraPermission('granted');
-      }
+      console.log('getUserMedia successful, stopping stream...');
+      // Stop the stream immediately - we just needed permission
+      stream.getTracks().forEach(track => track.stop());
+      
+      console.log('Setting permission to granted');
+      setCameraPermission('granted');
+      toast({
+        title: "Camera Access Granted",
+        description: "Camera is now ready for gesture detection",
+      });
     } catch (error) {
       console.error('Camera permission denied:', error);
       setCameraPermission('denied');
@@ -113,11 +157,51 @@ const Session = () => {
     navigate('/calibration');
   };
 
+  const debugCameraPermission = async () => {
+    try {
+      console.log('Checking camera permission status...');
+      console.log('Protocol:', window.location.protocol);
+      console.log('Host:', window.location.host);
+      
+      const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
+      console.log('Camera permission state:', permissions.state);
+      console.log('Current camera permission state:', cameraPermission);
+      
+      if (permissions.state === 'granted') {
+        setCameraPermission('granted');
+        toast({
+          title: "Camera Permission Found",
+          description: "Camera access is already granted",
+        });
+      } else if (permissions.state === 'denied') {
+        setCameraPermission('denied');
+        toast({
+          title: "Camera Permission Status",
+          description: "Camera permission is denied. Please check browser settings or try HTTPS.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Camera Permission Status",
+          description: `Permission state: ${permissions.state}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error checking permission:', error);
+      toast({
+        title: "Permission Check Error",
+        description: "Could not check camera permission status",
+        variant: "destructive"
+      });
+    }
+  };
+
   // Initialize gesture speech detection (disabled by default)
-  const { videoRef, isInitialized, isDetecting, resetDetection } = useGestureSpeech(
+  const { videoRef, isInitialized, isDetecting, testDetection, resetDetection } = useGestureSpeech(
     isDetectionActive ? gestureMapping : {}, // Only pass mapping when detection is active
     {
       onGestureDetected: (gesture) => {
+        console.log('Gesture detected in Session:', gesture);
         setDetectedGesture(gesture);
         const phrase = gestureMapping[gesture as keyof typeof gestureMapping];
         if (phrase) {
@@ -370,45 +454,123 @@ const Session = () => {
 
       <main className="p-6">
         {/* Camera video element for gesture detection */}
-        {showCamera && cameraPermission === 'granted' && (
-          <div className="fixed top-4 right-4 z-50">
+        {showCamera && cameraPermission === 'granted' && isDetectionActive && (
+          <div className="fixed top-4 left-4 z-50">
             <video
               ref={videoRef}
               autoPlay
               muted
               playsInline
-              className="w-32 h-24 rounded-lg border-2 border-primary/20 shadow-lg bg-black"
+              className="w-48 h-36 rounded-lg border-2 border-primary/20 shadow-lg bg-black"
               style={{ objectFit: 'cover' }}
             />
-            <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-2 py-1 rounded">
               Camera
             </div>
-            <div className={`absolute bottom-1 right-1 px-2 py-1 rounded text-xs ${
-              isDetectionActive ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'
+            <div className={`absolute bottom-1 left-1 px-2 py-1 rounded text-xs ${
+              isDetecting ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'
             }`}>
-              {isDetectionActive ? 'Detecting' : 'Ready'}
+              {isDetecting ? 'Detecting' : 'Ready'}
+            </div>
+            
+            {/* Debug info */}
+            <div className="absolute -right-2 top-0 bg-black/80 text-white text-xs p-2 rounded">
+              <div>Init: {isInitialized ? '✓' : '✗'}</div>
+              <div>Detect: {isDetecting ? '✓' : '✗'}</div>
+              <div>Gesture: {detectedGesture || 'None'}</div>
             </div>
           </div>
         )}
         
         {/* Camera permission request */}
         {showCamera && cameraPermission === 'denied' && (
-          <div className="fixed top-4 right-4 z-50 bg-red-500 text-white p-3 rounded-lg shadow-lg">
+          <div className="fixed top-4 left-4 z-50 bg-red-500 text-white p-3 rounded-lg shadow-lg">
             <div className="text-sm font-medium">Camera Access Required</div>
             <div className="text-xs opacity-90">Please allow camera access</div>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="mt-2 text-xs"
-              onClick={requestCameraPermission}
-            >
-              Grant Permission
-            </Button>
+            <div className="flex gap-2 mt-2">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs"
+                onClick={requestCameraPermission}
+              >
+                Grant Permission
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs"
+                onClick={() => {
+                  setCameraPermission('pending');
+                  setTimeout(() => requestCameraPermission(), 100);
+                }}
+              >
+                Refresh
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs"
+                onClick={debugCameraPermission}
+              >
+                Debug
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs"
+                onClick={async () => {
+                  console.log('Direct getUserMedia test...');
+                  try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    console.log('Direct test successful!');
+                    stream.getTracks().forEach(track => track.stop());
+                    toast({
+                      title: "Direct Test Success",
+                      description: "Camera permission dialog appeared",
+                    });
+                  } catch (error: unknown) {
+                    console.error('Direct test failed:', error);
+                    toast({
+                      title: "Direct Test Failed",
+                      description: error instanceof Error ? error.message : String(error),
+                      variant: "destructive"
+                    });
+                  }
+                }}
+              >
+                Test Direct
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs"
+                onClick={() => {
+                  console.log('Resetting permission state...');
+                  setCameraPermission('pending');
+                  toast({
+                    title: "Permission Reset",
+                    description: "Permission state reset. Try granting permission again.",
+                  });
+                }}
+              >
+                Reset State
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs"
+                onClick={testDetection}
+                disabled={!isInitialized}
+              >
+                Test Detection
+              </Button>
+            </div>
           </div>
         )}
         
         {showCamera && cameraPermission === 'pending' && (
-          <div className="fixed top-4 right-4 z-50 bg-yellow-500 text-white p-3 rounded-lg shadow-lg">
+          <div className="fixed top-4 left-4 z-50 bg-yellow-500 text-white p-3 rounded-lg shadow-lg">
             <div className="text-sm font-medium">Requesting Camera...</div>
             <div className="text-xs opacity-90">Please allow camera access</div>
           </div>
