@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { GestureGrid } from "@/components/session/GestureGrid";
 import { PhrasePreview } from "@/components/session/PhrasePreview";
@@ -31,6 +31,47 @@ const Session = () => {
   });
 
   // Hook for gesture speech functionality
+  const hookOptions = useMemo(() => ({
+    onGestureDetected: (gesture: string) => {
+      console.log('🎯 Gesture detected:', gesture);
+      console.log('📋 Current gesture mapping:', gestureMapping);
+      console.log('🔍 Looking for phrase for gesture:', gesture);
+      
+      setDetectedGesture(gesture);
+      const phrase = gestureMapping[gesture];
+      
+      if (phrase) {
+        console.log('📝 Phrase found:', phrase);
+        setCurrentPhrase(phrase);
+        
+        // Auto-speak if enabled
+        if (autoSpeak && isSpeechEnabled) {
+          console.log('🗣️ Auto-speaking phrase:', phrase);
+          console.log('Speech state:', { autoSpeak, isSpeechEnabled });
+          const speechResult = speakText(phrase);
+          console.log('Speech result:', speechResult);
+        } else {
+          console.log('Auto-speak disabled:', { autoSpeak, isSpeechEnabled });
+        }
+      } else {
+        console.log('❌ No phrase found for gesture:', gesture);
+        console.log('Available gestures:', Object.keys(gestureMapping));
+        console.log('Available phrases:', Object.values(gestureMapping));
+      }
+    },
+    onPhraseSpoken: (phrase: string) => {
+      console.log('Phrase spoken callback:', phrase);
+      setCurrentPhrase(phrase);
+      
+      // Also auto-speak from this callback if enabled
+      if (autoSpeak && isSpeechEnabled) {
+        console.log('🗣️ Auto-speaking from phrase callback:', phrase);
+        speakText(phrase);
+      }
+    },
+    isActive: isDetectionActive
+  }), [autoSpeak, isSpeechEnabled, isDetectionActive]);
+
   const {
     videoRef,
     isInitialized,
@@ -38,23 +79,19 @@ const Session = () => {
     startCamera,
     stopCamera,
     resetDetection
-  } = useGestureSpeech(gestureMapping, {
-    onGestureDetected: (gesture: string) => {
-      setDetectedGesture(gesture);
-      const phrase = gestureMapping[gesture];
-      if (phrase) {
-        setCurrentPhrase(phrase);
-        if (autoSpeak && isSpeechEnabled && 'speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(phrase);
-          speechSynthesis.speak(utterance);
-        }
-      }
-    },
-    onPhraseSpoken: (phrase: string) => {
-      setCurrentPhrase(phrase);
-    },
-    isActive: isDetectionActive
-  });
+  } = useGestureSpeech(gestureMapping, hookOptions);
+
+  // Debug the hook options being passed
+  useEffect(() => {
+    console.log('Hook options updated:', {
+      isActive: isDetectionActive,
+      mappingKeys: Object.keys(gestureMapping),
+      autoSpeak,
+      isSpeechEnabled
+    });
+  }, [isDetectionActive, gestureMapping, autoSpeak, isSpeechEnabled]);
+
+
 
   // Request camera permission
   const requestCameraPermission = async (): Promise<boolean> => {
@@ -93,30 +130,119 @@ const Session = () => {
     });
   };
 
+  // Robust speech synthesis function
+  const speakText = (text: string) => {
+    console.log('🎤 speakText called with:', text);
+    console.log('Speech state:', { isSpeechEnabled, autoSpeak });
+    
+    if (!isSpeechEnabled || !('speechSynthesis' in window)) {
+      console.log('❌ Speech synthesis not available or disabled');
+      return false;
+    }
+    
+    try {
+      console.log('🔧 Setting up speech synthesis...');
+      // Cancel any ongoing speech
+      speechSynthesis.cancel();
+      
+      // Create new utterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Configure speech settings
+      utterance.rate = 1.0;
+      utterance.volume = 1.0;
+      utterance.pitch = 1.0;
+      utterance.lang = 'en-US';
+      
+      // Add event handlers for debugging
+      utterance.onstart = () => console.log('🔊 Speech started:', text);
+      utterance.onend = () => console.log('🔇 Speech ended:', text);
+      utterance.onerror = (e) => console.error('❌ Speech error:', e);
+      
+      // Speak the text
+      speechSynthesis.speak(utterance);
+      console.log('✅ Speech synthesis triggered successfully:', text);
+      return true;
+    } catch (error) {
+      console.error('❌ Speech synthesis error:', error);
+      return false;
+    }
+  };
+
   // Toggle speech functionality
   const toggleSpeech = () => {
-    setIsSpeechEnabled(!isSpeechEnabled);
-    if (!isSpeechEnabled && 'speechSynthesis' in window) {
+    const newState = !isSpeechEnabled;
+    setIsSpeechEnabled(newState);
+    console.log('Speech toggled:', newState ? 'ON' : 'OFF');
+    
+    if (!newState && 'speechSynthesis' in window) {
       speechSynthesis.cancel(); // Stop any ongoing speech
+      console.log('Speech cancelled');
+    }
+  };
+
+  // Toggle camera display
+  const toggleCameraDisplay = async () => {
+    console.log('Toggle camera display clicked. Current state:', { showCamera, cameraPermission, isDetectionActive });
+    
+    if (showCamera) {
+      setShowCamera(false);
+      // Don't stop camera if detection is active
+      if (!isDetectionActive) {
+        stopCamera();
+      }
+    } else {
+      // Check permission first
+      if (cameraPermission !== 'granted') {
+        console.log('Requesting camera permission...');
+        const granted = await requestCameraPermission();
+        if (!granted) {
+          console.log('Camera permission denied');
+          return;
+        }
+      }
+      // Start camera for display
+      console.log('Starting camera for display...');
+      const cameraStarted = await startCamera();
+      console.log('Camera start result:', cameraStarted);
+      if (cameraStarted) {
+        setShowCamera(true);
+        console.log('Camera display enabled');
+      }
     }
   };
 
   // Start/stop detection
   const toggleDetection = async () => {
+    console.log('Toggle detection clicked. Current state:', { isDetectionActive, cameraPermission });
+    
     if (isDetectionActive) {
+      console.log('Stopping detection...');
       setIsDetectionActive(false);
       stopCamera();
       setDetectedGesture("");
       setCurrentPhrase("");
+      setShowCamera(false); // Hide camera when stopping detection
+      console.log('Detection stopped');
     } else {
+      console.log('Starting detection...');
       // Check permission first
       if (cameraPermission !== 'granted') {
+        console.log('Requesting camera permission for detection...');
         const granted = await requestCameraPermission();
-        if (!granted) return;
+        if (!granted) {
+          console.log('Camera permission denied for detection');
+          return;
+        }
       }
+      console.log('Starting camera for detection...');
       const cameraStarted = await startCamera();
+      console.log('Camera start result for detection:', cameraStarted);
       if (cameraStarted) {
+        console.log('Setting detection active...');
         setIsDetectionActive(true);
+        setShowCamera(true); // Show camera when starting detection
+        console.log('Detection started successfully');
       }
     }
   };
@@ -132,10 +258,60 @@ const Session = () => {
     });
   };
 
-  // Request camera permission on component mount
+  // Request camera permission on component mount and handle initial camera state
   useEffect(() => {
-    requestCameraPermission();
+    const initCamera = async () => {
+      const granted = await requestCameraPermission();
+      if (granted) {
+        // If permission is granted, we can show camera when needed
+        console.log('Camera permission granted on mount');
+      }
+    };
+    initCamera();
   }, []);
+
+  // Monitor video element for stream changes
+  useEffect(() => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      
+      const handleLoadedMetadata = () => {
+        console.log('Video metadata loaded:', {
+          videoWidth: video.videoWidth,
+          videoHeight: video.videoHeight,
+          readyState: video.readyState,
+          hasStream: !!video.srcObject
+        });
+      };
+      
+      const handleCanPlay = () => {
+        console.log('Video can play:', {
+          videoWidth: video.videoWidth,
+          videoHeight: video.videoHeight,
+          readyState: video.readyState
+        });
+      };
+      
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      video.addEventListener('canplay', handleCanPlay);
+      
+      return () => {
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        video.removeEventListener('canplay', handleCanPlay);
+      };
+    }
+  }, [showCamera]);
+
+  // Monitor detection state changes
+  useEffect(() => {
+    console.log('Detection state changed:', { 
+      isDetectionActive, 
+      isInitialized, 
+      cameraPermission,
+      autoSpeak,
+      isSpeechEnabled 
+    });
+  }, [isDetectionActive, isInitialized, cameraPermission, autoSpeak, isSpeechEnabled]);
 
   return (
     <div className="min-h-screen bg-gradient-gentle">
@@ -160,6 +336,20 @@ const Session = () => {
                    cameraPermission !== 'granted' ? 'Camera Required' :
                    isDetectionActive ? 'Detection Active' : 'Ready to Start'}
                 </span>
+                
+                {/* Speech Status */}
+                <div className="flex items-center gap-2 ml-4 pl-4 border-l border-border/30">
+                  <div className={`w-2 h-2 rounded-full ${isSpeechEnabled ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <span className="text-xs text-muted-foreground">
+                    {isSpeechEnabled ? 'Speech ON' : 'Speech OFF'}
+                  </span>
+                  {isSpeechEnabled && autoSpeak && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="text-xs text-muted-foreground">Auto</span>
+                    </div>
+                  )}
+                </div>
               </div>
               
               <Button 
@@ -186,7 +376,7 @@ const Session = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setShowCamera(!showCamera)}
+                onClick={toggleCameraDisplay}
                 className="gap-2 hover:bg-white/80 transition-colors"
               >
                 {showCamera ? <Camera className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -204,23 +394,18 @@ const Session = () => {
                 {isDetectionActive ? "Stop" : "Start"}
               </Button>
               
-              {currentPhrase && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => {
-                    if (isSpeechEnabled && 'speechSynthesis' in window) {
-                      const utterance = new SpeechSynthesisUtterance(currentPhrase);
-                      speechSynthesis.speak(utterance);
-                    }
-                  }}
-                  className="gap-2 hover:bg-white/80 transition-colors"
-                  disabled={!isSpeechEnabled}
-                >
-                  <Mic className="w-4 h-4" />
-                  Speak
-                </Button>
-              )}
+                          {currentPhrase && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => speakText(currentPhrase)}
+                className="gap-2 hover:bg-white/80 transition-colors"
+                disabled={!isSpeechEnabled}
+              >
+                <Mic className="w-4 h-4" />
+                Speak
+              </Button>
+            )}
               
               <Button 
                 variant="outline" 
@@ -241,6 +426,8 @@ const Session = () => {
                 <Settings className="w-4 h-4" />
                 Edit Mappings
               </Button>
+              
+
             </div>
           </div>
         </div>
@@ -287,7 +474,7 @@ const Session = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setShowCamera(!showCamera)}
+              onClick={toggleCameraDisplay}
               className="gap-1 text-xs"
             >
               {showCamera ? <Camera className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
@@ -309,12 +496,7 @@ const Session = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => {
-                  if (isSpeechEnabled && 'speechSynthesis' in window) {
-                    const utterance = new SpeechSynthesisUtterance(currentPhrase);
-                    speechSynthesis.speak(utterance);
-                  }
-                }}
+                onClick={() => speakText(currentPhrase)}
                 className="gap-1 text-xs"
                 disabled={!isSpeechEnabled}
               >
@@ -342,6 +524,8 @@ const Session = () => {
               <Settings className="w-3 h-3" />
               Edit
             </Button>
+            
+
           </div>
           
           <div className="text-xs text-muted-foreground">
@@ -354,14 +538,19 @@ const Session = () => {
         {/* Camera video element - always visible when camera permission is granted */}
         {showCamera && cameraPermission === 'granted' && (
           <div className="fixed top-20 right-4 z-50">
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              className="rounded-lg border shadow-lg"
-              width={320}
-              height={240}
-            />
+            <div className="bg-white rounded-lg shadow-lg p-2">
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                playsInline
+                className="rounded-lg"
+                width={320}
+                height={240}
+                style={{ transform: 'scaleX(-1)' }} // Mirror the video for better UX
+              />
+              <div className="text-xs text-center text-muted-foreground mt-2">Camera Feed</div>
+            </div>
           </div>
         )}
 
@@ -397,6 +586,21 @@ const Session = () => {
           </div>
         )}
 
+        {/* Debug Info
+        <div className="max-w-6xl mx-auto mx-6 lg:mx-8 xl:mx-12 mb-6">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <h3 className="text-sm font-semibold text-yellow-800 mb-2">Debug Info</h3>
+            <div className="text-xs text-yellow-700 space-y-1">
+              <div>Speech Enabled: {isSpeechEnabled ? '✅' : '❌'}</div>
+              <div>Auto Speak: {autoSpeak ? '✅' : '❌'}</div>
+              <div>Detection Active: {isDetectionActive ? '✅' : '❌'}</div>
+              <div>Current Gesture: {detectedGesture || 'None'}</div>
+              <div>Current Phrase: {currentPhrase || 'None'}</div>
+              <div>Gesture Mappings: {JSON.stringify(gestureMapping)}</div>
+            </div>
+          </div>
+        </div> */}
+
         <div className="max-w-6xl mx-auto space-y-6 p-6 bg-white/40 backdrop-blur-sm rounded-xl border border-white/20 mx-6 lg:mx-8 xl:mx-12">
           <PhrasePreview 
             currentPhrase={currentPhrase}
@@ -408,7 +612,16 @@ const Session = () => {
               <GestureGrid 
                 gestureMapping={gestureMapping}
                 detectedGesture={detectedGesture}
-                onGestureDetected={setDetectedGesture}
+                onGestureDetected={(gesture) => {
+                  setDetectedGesture(gesture);
+                  const phrase = gestureMapping[gesture];
+                  if (phrase) {
+                    setCurrentPhrase(phrase);
+                    if (isSpeechEnabled) {
+                      speakText(phrase);
+                    }
+                  }
+                }}
               />
             </div>
             
