@@ -8,6 +8,12 @@ export default defineConfig({
     host: "::",
     allowedHosts: ["localhost", "127.0.0.1", "0.0.0.0","40cbf62dc1d38a.lhr.life"],
     port: 8080,
+    // Note: HTTPS is not required for localhost camera access
+    // https: true,
+    // Add headers for camera permission
+    headers: {
+      'Permissions-Policy': 'camera=(self)',
+    },
   },
   plugins: [react()],
   resolve: {

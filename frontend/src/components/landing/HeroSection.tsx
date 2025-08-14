@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Eye, Mic, Heart, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
 
 const HeroSection = () => {
-  const handleStartSession = () => {
+  const handleGetStarted = () => {
     window.location.href = '/calibration';
   };
 
@@ -39,19 +40,19 @@ const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                variant="hero" 
-                size="xl" 
-                onClick={handleStartSession}
-                className="group"
-              >
+            <Button 
+              variant="hero" 
+              size="lg" 
+              onClick={handleGetStarted}
+              className="group"
+            >
                 <Eye className="w-6 h-6" />
                 Start Your Session
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
               <Button 
-                variant="gentle" 
+                variant="hero" 
                 size="xl"
                 onClick={() => {
                   const visionSection = document.getElementById('vision-impact');
@@ -96,10 +97,10 @@ const HeroSection = () => {
             <div className="relative">
               <img 
                 src={heroImage} 
-                alt="People communicating through eye contact and expressions"
-                className="w-full h-auto rounded-2xl shadow-warm"
+                alt="Assistive communication technology"
+                className="w-full h-auto rounded-2xl shadow-lg"
               />
-              <div className="absolute inset-0 bg-gradient-warm opacity-10 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
             </div>
             
             {/* Floating elements */}

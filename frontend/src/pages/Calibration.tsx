@@ -21,14 +21,30 @@ const Calibration = () => {
   ];
 
   const handleCalibrationPoint = (pointData: any) => {
-    setCalibrationData(prev => [...prev, pointData]);
+    const newCalibrationData = [...calibrationData, pointData];
+    setCalibrationData(newCalibrationData);
     
     if (currentStep < calibrationSteps.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
       setCalibrationComplete(true);
-      // Store calibration data locally
-      localStorage.setItem('blinkSpeechCalibration', JSON.stringify(calibrationData));
+      
+      // Calculate center point from all calibration points
+      const centerPoint = calibrationSteps.find(step => step.name === "Center");
+      const centerX = window.innerWidth * (centerPoint?.position.x || 50) / 100;
+      const centerY = window.innerHeight * (centerPoint?.position.y || 50) / 100;
+      
+      // Store calibration data with proper center coordinates
+      const calibrationConfig = {
+        centerX,
+        centerY,
+        threshold: 100,
+        points: newCalibrationData,
+        timestamp: Date.now()
+      };
+      
+      localStorage.setItem('blinkSpeechCalibration', JSON.stringify(calibrationConfig));
+      console.log('Calibration saved:', calibrationConfig);
     }
   };
 
@@ -95,7 +111,7 @@ const Calibration = () => {
 
               <Button 
                 size="lg" 
-                variant="hero"
+                variant="default"
                 onClick={startSession}
                 className="gap-2"
               >

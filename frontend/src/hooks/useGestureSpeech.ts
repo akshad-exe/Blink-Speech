@@ -12,6 +12,7 @@ interface GestureSpeechOptions {
   onPhraseSpoken?: (phrase: string) => void;
   blinkThreshold?: number;
   cooldownMs?: number;
+  isActive?: boolean;
 }
 
 export function useGestureSpeech(
@@ -30,12 +31,15 @@ export function useGestureSpeech(
   const {
     onGestureDetected,
     onPhraseSpoken,
-    blinkThreshold = 0.25,
-    cooldownMs = 1000
+    blinkThreshold = 0.3,  // More lenient threshold for better detection
+    cooldownMs = 1000,  // Reduced cooldown for faster response
+    isActive = false
   } = options;
 
   // Initialize MediaPipe and WebGazer
   useEffect(() => {
+    let initializationAborted = false;
+
     async function init() {
       try {
         console.log('Initializing TensorFlow.js backend...');
@@ -43,6 +47,8 @@ export function useGestureSpeech(
         await tf.setBackend('webgl');
         await tf.ready();
         console.log('TensorFlow.js backend ready:', tf.getBackend());
+
+        if (initializationAborted) return;
 
         console.log('Loading MediaPipe model...');
         // Initialize MediaPipe
@@ -52,37 +58,13 @@ export function useGestureSpeech(
           refineLandmarks: true,
           maxFaces: 1
         });
+        
+        if (initializationAborted) return;
+        
         setDetector(det);
         console.log('MediaPipe detector created successfully');
 
-        // Wait for video element to be available
-        if (!videoRef.current) {
-          console.log('Video element not ready, retrying...');
-          setTimeout(init, 100);
-          return;
-        }
-
-        // Set up video stream for our video element
-        try {
-          console.log('Getting video stream...');
-          const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-              width: { ideal: 640 },
-              height: { ideal: 480 },
-              facingMode: 'user'
-            } 
-          });
-          
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            await videoRef.current.play();
-            console.log('Video stream started successfully');
-          }
-        } catch (error) {
-          console.error('Failed to get video stream:', error);
-        }
-
-        // Initialize WebGazer with our video element
+        // Initialize WebGazer (without requesting camera - we'll handle that separately)
         console.log('Initializing WebGazer...');
         WebGazer.setRegression('ridge')
           .setTracker('clmtrackr')
@@ -91,8 +73,7 @@ export function useGestureSpeech(
               // Update calibration data with current gaze center
               setCalibrationData(data.x, data.y, 100);
             }
-          })
-          .begin();
+          });
 
         setIsInitialized(true);
         console.log('Initialization complete!');
@@ -103,6 +84,7 @@ export function useGestureSpeech(
     init();
 
     return () => {
+      initializationAborted = true;
       WebGazer.end();
       // Stop video stream on cleanup
       if (videoRef.current && videoRef.current.srcObject) {
@@ -128,49 +110,83 @@ export function useGestureSpeech(
   const detectPattern = useCallback((blinks: number[], gazeDir: string): string | null => {
     const now = performance.now();
     
-    // Clean old blinks (older than 2 seconds)
-    const recentBlinks = blinks.filter(timestamp => now - timestamp < 2000);
+    // Clean old blinks (older than 4 seconds for better pattern detection)
+    const recentBlinks = blinks.filter(timestamp => now - timestamp < 4000);
     
     if (recentBlinks.length === 0) return null;
     
-    // Detect blink patterns
+    // Sort blinks by timestamp to ensure proper ordering
+    recentBlinks.sort((a, b) => a - b);
+    
+    console.log('🔍 Analyzing blink pattern:', {
+      totalBlinks: recentBlinks.length,
+      gazeDirection: gazeDir,
+      timestamps: recentBlinks.map(t => Math.round(now - t)),
+      timeSinceLastBlink: recentBlinks.length > 0 ? now - recentBlinks[recentBlinks.length - 1] : 0
+    });
+    
+    // SIMPLIFIED PATTERN DETECTION - Start with single blinks only
     if (recentBlinks.length === 1) {
-      const blinkDuration = now - recentBlinks[0];
-      if (blinkDuration > 800) {
+      const timeSinceBlink = now - recentBlinks[0];
+      
+      // Immediate single blink detection (wait at least 200ms to avoid false positives)
+      if (timeSinceBlink >= 200 && timeSinceBlink <= 1000) {
+        const pattern = 'singleBlink'; // Always use simple single blink first
+        console.log('✅ Single blink pattern detected:', pattern, 'Time since blink:', timeSinceBlink);
+        return pattern;
+      }
+      
+      // Long blink detection
+      if (timeSinceBlink > 1000) {
+        console.log('✅ Long blink pattern detected');
         return 'longBlink';
       }
-      return gazeDir !== 'center' ? `singleBlink_${gazeDir}` : 'singleBlink';
     }
     
     if (recentBlinks.length === 2) {
       const timeBetweenBlinks = recentBlinks[1] - recentBlinks[0];
-      if (timeBetweenBlinks < 400) {
-        return gazeDir !== 'center' ? `doubleBlink_${gazeDir}` : 'doubleBlink';
+      const timeSinceLastBlink = now - recentBlinks[1];
+      
+      // Double blink: two blinks within 800ms, wait 200ms after last blink
+      if (timeBetweenBlinks <= 800 && timeSinceLastBlink >= 200 && timeSinceLastBlink <= 1000) {
+        console.log('✅ Double blink pattern detected');
+        return 'doubleBlink';
       }
     }
     
-    if (recentBlinks.length === 3) {
+    if (recentBlinks.length >= 3) {
       const timeBetweenFirstTwo = recentBlinks[1] - recentBlinks[0];
       const timeBetweenLastTwo = recentBlinks[2] - recentBlinks[1];
-      if (timeBetweenFirstTwo < 400 && timeBetweenLastTwo < 400) {
-        return gazeDir !== 'center' ? `tripleBlink_${gazeDir}` : 'tripleBlink';
+      const timeSinceLastBlink = now - recentBlinks[2];
+      
+      // Triple blink: all within reasonable timing
+      if (timeBetweenFirstTwo <= 800 && timeBetweenLastTwo <= 800 && timeSinceLastBlink >= 200 && timeSinceLastBlink <= 1000) {
+        console.log('✅ Triple blink pattern detected');
+        return 'tripleBlink';
       }
     }
     
     return null;
   }, []);
 
-  // Main detection loop
+  // Main detection loop - only depends on essential values
   useEffect(() => {
-    if (!isInitialized || !detector) {
-      console.log('Detection loop not started - waiting for initialization');
+    if (!isInitialized || !detector || Object.keys(mapping).length === 0) {
+      console.log('Detection loop not started - waiting for initialization and mapping');
+      return;
+    }
+    
+    // Only run detection if isActive is true
+    if (!isActive) {
+      console.log('Detection loop paused - not active');
+      setIsDetecting(false);
       return;
     }
 
     let animationId: number;
     setIsDetecting(true);
     let frameCount = 0;
-    console.log('Starting detection loop...');
+    console.log('Starting detection loop with mapping:', Object.keys(mapping));
 
     async function detect() {
       if (!videoRef.current) {
@@ -181,7 +197,6 @@ export function useGestureSpeech(
 
       // Check if video is ready
       if (videoRef.current.readyState !== 4) {
-        console.log('Video not ready, retrying...');
         animationId = requestAnimationFrame(detect);
         return;
       }
@@ -199,8 +214,7 @@ export function useGestureSpeech(
             facesDetected: faces.length,
             videoReady: videoRef.current.readyState === 4,
             videoWidth: videoRef.current.videoWidth,
-            videoHeight: videoRef.current.videoHeight,
-            videoTime: videoRef.current.currentTime
+            videoHeight: videoRef.current.videoHeight
           });
         }
         
@@ -208,16 +222,25 @@ export function useGestureSpeech(
           const landmarks = faces[0].keypoints;
           const ear = calculateEAR(landmarks);
 
-          // Debug EAR values every 30 frames
-          if (frameCount % 30 === 0) {
-            console.log('EAR value:', ear, 'Threshold:', blinkThreshold);
+          // Debug EAR values more frequently during active detection
+          if (frameCount % 15 === 0) {
+            console.log('👁️ EAR value:', ear.toFixed(3), 'Threshold:', blinkThreshold, 'Face detected:', faces.length > 0);
           }
 
-          // Detect blink
+          // Detect blink with debouncing
           if (ear < blinkThreshold) {
             const now = performance.now();
-            blinkTimestamps.current.push(now);
-            console.log('Blink detected! EAR:', ear, 'Time:', now);
+            // Prevent multiple detections within 150ms (debounce)
+            const lastBlink = blinkTimestamps.current[blinkTimestamps.current.length - 1];
+            if (!lastBlink || now - lastBlink > 150) {
+              blinkTimestamps.current.push(now);
+              console.log('🟢 BLINK DETECTED! EAR:', ear.toFixed(3), 'Time:', now, 'Total blinks:', blinkTimestamps.current.length);
+              
+              // Visual feedback - could add sound beep here
+              if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(50);
+              }
+            }
           }
 
           // Get gaze direction
@@ -226,22 +249,62 @@ export function useGestureSpeech(
           // Detect pattern
           const pattern = detectPattern(blinkTimestamps.current, gazeDir);
           
-          if (pattern && pattern !== lastSpokenPattern.current) {
+          if (pattern) {
             const now = performance.now();
             
-            // Check cooldown
+            console.log('🎯 PATTERN DETECTED:', pattern, 'Cooldown check:', now - lastSpokenTime.current, '>', cooldownMs);
+            
+            // Check cooldown and avoid repeating the same pattern immediately
             if (now - lastSpokenTime.current > cooldownMs) {
               const phrase = mapping[pattern];
+              console.log('📝 Looking up phrase for pattern:', pattern, 'Found:', phrase);
+              console.log('🗣️ Available mappings:', Object.keys(mapping));
+              
               if (phrase) {
-                console.log('Pattern detected:', pattern, 'Phrase:', phrase);
+                console.log('🎉 PATTERN CONFIRMED - SPEAKING:', pattern, 'Phrase:', phrase);
                 lastSpokenPattern.current = pattern;
                 lastSpokenTime.current = now;
+                
+                // Clear blink history after successful pattern detection
                 blinkTimestamps.current = [];
                 
-                // Callbacks - let the parent component handle speech
+                // Multiple speech attempts for reliability
+                const speakPhrase = (text: string) => {
+                  try {
+                    if ('speechSynthesis' in window) {
+                      speechSynthesis.cancel();
+                      const utterance = new SpeechSynthesisUtterance(text);
+                      utterance.rate = 1.0;
+                      utterance.volume = 1.0;
+                      utterance.lang = 'en-US';
+                      
+                      utterance.onstart = () => console.log('🔊 Speech started:', text);
+                      utterance.onend = () => console.log('🔇 Speech ended:', text);
+                      utterance.onerror = (e) => console.error('❌ Speech error:', e);
+                      
+                      speechSynthesis.speak(utterance);
+                      console.log('🎤 Speech synthesis triggered:', text);
+                      return true;
+                    }
+                  } catch (error) {
+                    console.error('❌ Speech synthesis error:', error);
+                  }
+                  return false;
+                };
+                
+                // Try speech synthesis
+                const speechSuccess = speakPhrase(phrase);
+                console.log('Speech synthesis success:', speechSuccess);
+                
+                // Callbacks - let the parent component handle speech too
                 onGestureDetected?.(pattern);
                 onPhraseSpoken?.(phrase);
+              } else {
+                console.warn('❌ No phrase found for pattern:', pattern, 'Available:', Object.keys(mapping));
               }
+            } else {
+              const remainingCooldown = cooldownMs - (now - lastSpokenTime.current);
+              console.log('⏳ Pattern in cooldown:', pattern, 'Remaining:', remainingCooldown + 'ms');
             }
           }
         } else {
@@ -263,7 +326,7 @@ export function useGestureSpeech(
       setIsDetecting(false);
       console.log('Detection loop stopped');
     };
-  }, [detector, mapping, isInitialized, detectPattern, blinkThreshold, cooldownMs, onGestureDetected, onPhraseSpoken]);
+  }, [detector, isInitialized, Object.keys(mapping).join(','), isActive, blinkThreshold, cooldownMs]);
 
   const testDetection = async () => {
     if (!detector || !videoRef.current) {
@@ -286,11 +349,51 @@ export function useGestureSpeech(
     }
   };
 
+  // Function to start camera stream
+  const startCamera = async () => {
+    if (!videoRef.current) return false;
+    
+    try {
+      console.log('Starting camera for gesture detection...');
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user'
+        } 
+      });
+      
+      videoRef.current.srcObject = stream;
+      await videoRef.current.play();
+      
+      // Start WebGazer with the video stream
+      WebGazer.begin();
+      
+      console.log('Camera started successfully for gesture detection');
+      return true;
+    } catch (error) {
+      console.error('Failed to start camera:', error);
+      return false;
+    }
+  };
+
+  // Function to stop camera stream
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    WebGazer.end();
+  };
+
   return { 
     videoRef, 
     isInitialized, 
     isDetecting,
     testDetection,
+    startCamera,
+    stopCamera,
     resetDetection: () => {
       blinkTimestamps.current = [];
       lastSpokenPattern.current = null;
