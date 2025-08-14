@@ -66,16 +66,16 @@ const GetStartedSection = () => {
 
           {/* CTA */}
           <div className="space-y-4">
-            <Button 
-              variant="hero" 
-              size="xl" 
-              onClick={handleStartSession}
-              className="group"
-            >
-              <Eye className="w-6 h-6" />
-              Begin Your Journey
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+                          <Button 
+                variant="hero" 
+                size="xl" 
+                onClick={handleStartSession}
+                className="group"
+              >
+                <Eye className="w-6 h-6" />
+                Start Free Demo
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
             
             <p className="text-sm text-muted-foreground">
               "One blink, one phrase, endless connection."

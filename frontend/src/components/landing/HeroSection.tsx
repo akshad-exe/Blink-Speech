@@ -4,8 +4,7 @@ import heroImage from "@/assets/hero-image.jpg";
 
 const HeroSection = () => {
   const handleStartSession = () => {
-    // TODO: Navigate to calibration page
-    console.log("Starting session...");
+    window.location.href = '/calibration';
   };
 
   return (
@@ -16,7 +15,7 @@ const HeroSection = () => {
         <div className="absolute bottom-1/3 right-1/4 w-40 h-40 bg-primary-glow/20 rounded-full blur-3xl animate-gentle-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 pt-20 pb-16">
+      <div className="relative z-10 container mx-auto px-6 pt-32 pb-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
           {/* Content */}
           <div className="space-y-8 animate-fade-in">
@@ -51,9 +50,16 @@ const HeroSection = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
-              <Button variant="gentle" size="xl">
+              <Button 
+                variant="gentle" 
+                size="xl"
+                onClick={() => {
+                  const visionSection = document.getElementById('vision-impact');
+                  visionSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 <Mic className="w-6 h-6" />
-                Learn How It Works
+                Read More
               </Button>
             </div>
 
