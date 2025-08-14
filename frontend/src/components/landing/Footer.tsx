@@ -6,11 +6,10 @@ const Footer = () => {
     product: [
       { name: "Features", href: "#features" },
       { name: "How It Works", href: "#how-it-works" },
-      { name: "Pricing", href: "#pricing" },
       { name: "Demo", href: "/calibration" }
     ],
     support: [
-      { name: "Documentation", href: "/docs" },
+      { name: "Documentation", href: "https://github.com/akshad-exe/Blink-Speech/blob/main/docs/README.md" },
       { name: "Help Center", href: "#help" },
       { name: "Contact Us", href: "#contact" },
       { name: "Troubleshooting", href: "#troubleshooting" }
@@ -52,27 +51,7 @@ const Footer = () => {
               everywhere. Privacy-first, open-source, and designed for real-world impact.
             </p>
             
-            {/* Key Features */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <Eye className="w-6 h-6 text-primary" />
-                </div>
-                <div className="text-xs text-muted-foreground">Eye Tracking</div>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <Globe className="w-6 h-6 text-primary" />
-                </div>
-                <div className="text-xs text-muted-foreground">Global Access</div>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <Shield className="w-6 h-6 text-primary" />
-                </div>
-                <div className="text-xs text-muted-foreground">Privacy First</div>
-              </div>
-            </div>
+
 
             {/* Social Links */}
             <div className="flex gap-4">
@@ -131,27 +110,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
-        <div className="bg-primary/10 rounded-2xl p-8 mb-12">
-          <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-2xl font-bold text-white mb-2">
-              Stay Updated
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              Get the latest updates on new features, accessibility improvements, and community stories.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <Button variant="hero" size="lg">
-                Subscribe
-              </Button>
-            </div>
-          </div>
-        </div>
+
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-8">

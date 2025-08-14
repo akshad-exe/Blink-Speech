@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Header from "@/components/landing/Header";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CalibrationDots } from "@/components/calibration/CalibrationDots";
@@ -56,18 +57,8 @@ const Calibration = () => {
 
   return (
     <div className="min-h-screen bg-gradient-gentle flex flex-col">
-      <header className="p-6">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Gaze Calibration
-          </h1>
-          <p className="text-muted-foreground">
-            Look at each dot for 3 seconds to calibrate your gaze tracking
-          </p>
-        </div>
-      </header>
-
-      <main className="flex-1 flex flex-col items-center justify-center p-6">
+      <Header />
+      <main className="flex-1 flex flex-col items-center justify-center p-6 pt-24">
         <div className="max-w-4xl mx-auto w-full">
           {!calibrationComplete ? (
             <>

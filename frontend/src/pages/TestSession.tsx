@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Header from "@/components/landing/Header";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -93,6 +94,7 @@ const TestSession = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-8">
+      <Header />
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">Blink Detection Test</h1>
         

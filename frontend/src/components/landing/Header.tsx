@@ -9,8 +9,6 @@ const Header = () => {
     { name: "Features", href: "#features" },
     { name: "How It Works", href: "#how-it-works" },
     { name: "Impact", href: "#vision-impact" },
-    { name: "Stories", href: "#testimonials" },
-    { name: "Documentation", href: "/docs" }
   ];
 
   const scrollToSection = (href: string) => {
@@ -47,7 +45,7 @@ const Header = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             <Button 
-              variant="gentle" 
+              variant="secondary" 
               size="sm"
               onClick={() => window.location.href = '/calibration'}
             >
@@ -56,7 +54,7 @@ const Header = () => {
             <Button 
               variant="hero" 
               size="sm"
-              onClick={() => window.location.href = '/docs'}
+              onClick={() => window.open('https://github.com/akshad-exe/Blink-Speech/blob/main/docs/README.md', '_blank')}
             >
               Documentation
             </Button>
@@ -90,7 +88,7 @@ const Header = () => {
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
                 <Button 
-                  variant="gentle" 
+                  variant="secondary" 
                   size="sm"
                   onClick={() => {
                     window.location.href = '/calibration';
@@ -103,7 +101,7 @@ const Header = () => {
                   variant="hero" 
                   size="sm"
                   onClick={() => {
-                    window.location.href = '/docs';
+                    window.open('https://github.com/akshad-exe/Blink-Speech/blob/main/docs/README.md', '_blank');
                     setIsMenuOpen(false);
                   }}
                 >
