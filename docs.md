@@ -51,7 +51,7 @@
 
 1. **📥 Clone & Install**
    ```bash
-   git clone https://github.com/atharhive/Blink-Speech.git
+   git clone https://github.com/akshad-exe/Blink-Speech.git
    cd Blink-Speech
    cd frontend && npm install
    cd ../backend && npm install

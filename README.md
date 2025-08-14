@@ -80,7 +80,7 @@ Blink Speech was born from a simple yet powerful belief: **communication is a fu
 ### **For Developers**
 1. **📥 Clone the Repository**
    ```bash
-   git clone https://github.com/atharhive/Blink-Speech.git
+   git clone https://github.com/akshad-exe/Blink-Speech.git
    cd Blink-Speech
    ```
 
@@ -272,7 +272,7 @@ Advanced computer vision powered by MediaPipe and WebGazer.js detects:
 We welcome contributions from developers, researchers, and accessibility advocates! Here's how you can help:
 
 ### **🛠️ Development**
-- 🐛 **Report Bugs**: [Create an issue](https://github.com/atharhive/Blink-Speech/issues/new) with detailed reproduction steps
+- 🐛 **Report Bugs**: [Create an issue](https://github.com/akshad-exe/Blink-Speech/issues/new) with detailed reproduction steps
 - 💡 **Suggest Features**: Share ideas for improving accessibility and usability
 - 🔧 **Submit Code**: Fork, develop, and create pull requests
 - 📝 **Documentation**: Help improve guides, tutorials, and API docs
@@ -308,11 +308,11 @@ Blink Speech is open-source software licensed under the [MIT License](./LICENSE)
 ### **📞 Get Help**
 - 📖 **Documentation**: [Complete guides and tutorials](./docs/README.md)
 - 🔧 **Troubleshooting**: [Common issues and solutions](./docs/troubleshooting.md)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/atharhive/Blink-Speech/discussions) for questions and ideas
-- 🐛 **Bug Reports**: [Issue Tracker](https://github.com/atharhive/Blink-Speech/issues) for technical problems
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/akshad-exe/Blink-Speech/discussions) for questions and ideas
+- 🐛 **Bug Reports**: [Issue Tracker](https://github.com/akshad-exe/Blink-Speech/issues) for technical problems
 
 ### **🌐 Connect**
-- 🐙 **GitHub**: [@atharhive/Blink-Speech](https://github.com/atharhive/Blink-Speech)
+- 🐙 **GitHub**: [@akshad-exe/Blink-Speech](https://github.com/akshad-exe/Blink-Speech)
 - 📧 **Contact**: For accessibility partnerships and healthcare integrations
 - 🤝 **Collaborate**: Open to academic research partnerships
 
@@ -348,12 +348,12 @@ For urgent accessibility needs or critical bugs affecting communication:
 
 ## 📊 **Project Stats**
 
-![GitHub stars](https://img.shields.io/github/stars/atharhive/Blink-Speech?style=social)
-![GitHub forks](https://img.shields.io/github/forks/atharhive/Blink-Speech?style=social)
-![GitHub issues](https://img.shields.io/github/issues/atharhive/Blink-Speech)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/atharhive/Blink-Speech)
-![GitHub last commit](https://img.shields.io/github/last-commit/atharhive/Blink-Speech)
-![GitHub code size](https://img.shields.io/github/languages/code-size/atharhive/Blink-Speech)
+![GitHub stars](https://img.shields.io/github/stars/akshad-exe/Blink-Speech?style=social)
+![GitHub forks](https://img.shields.io/github/forks/akshad-exe/Blink-Speech?style=social)
+![GitHub issues](https://img.shields.io/github/issues/akshad-exe/Blink-Speech)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/akshad-exe/Blink-Speech)
+![GitHub last commit](https://img.shields.io/github/last-commit/akshad-exe/Blink-Speech)
+![GitHub code size](https://img.shields.io/github/languages/code-size/akshad-exe/Blink-Speech)
 
 ---
 
@@ -361,7 +361,7 @@ For urgent accessibility needs or critical bugs affecting communication:
 
 **🌟 If Blink Speech has helped you or someone you know, please consider starring the repository to help others discover this tool! 🌟**
 
-[⭐ **Star on GitHub** ⭐](https://github.com/atharhive/Blink-Speech)
+[⭐ **Star on GitHub** ⭐](https://github.com/akshad-exe/Blink-Speech)
 
 *"Communication is a human right. Technology should make it accessible to everyone."*
 

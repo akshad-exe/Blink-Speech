@@ -33,7 +33,7 @@ This documentation is organized into the following sections:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/atharhive/Blink-Speech.git
+   git clone https://github.com/akshad-exe/Blink-Speech.git
    cd Blink-Speech
    ```
 
@@ -111,8 +111,8 @@ This documentation is organized into the following sections:
 ## 🔗 External Resources
 
 - [**Live Demo**](https://blink-speech.vercel.app) - Try the application
-- [**Project Repository**](https://github.com/atharhive/Blink-Speech) - Source code
-- [**Issue Tracker**](https://github.com/atharhive/Blink-Speech/issues) - Report bugs or request features
+- [**Project Repository**](https://github.com/akshad-exe/Blink-Speech) - Source code
+- [**Issue Tracker**](https://github.com/akshad-exe/Blink-Speech/issues) - Report bugs or request features
 - [**WebGazer.js Documentation**](https://webgazer.cs.brown.edu/) - Eye tracking library
 - [**MediaPipe Face Mesh**](https://google.github.io/mediapipe/solutions/face_mesh.html) - Facial landmark detection
 
@@ -124,4 +124,4 @@ This project is licensed under the MIT License. See the [LICENSE](../LICENSE) fi
 
 ---
 
-**Need help?** Check our [Troubleshooting Guide](./troubleshooting.md) or [open an issue](https://github.com/atharhive/Blink-Speech/issues/new).
+**Need help?** Check our [Troubleshooting Guide](./troubleshooting.md) or [open an issue](https://github.com/akshad-exe/Blink-Speech/issues/new).

@@ -28,7 +28,7 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { name: "GitHub", icon: <Github className="w-5 h-5" />, href: "https://github.com/atharhive/Blink-Speech" },
+    { name: "GitHub", icon: <Github className="w-5 h-5" />, href: "https://github.com/akshad-exe/Blink-Speech" },
     { name: "Twitter", icon: <Twitter className="w-5 h-5" />, href: "#" },
     { name: "LinkedIn", icon: <Linkedin className="w-5 h-5" />, href: "#" },
     { name: "Email", icon: <Mail className="w-5 h-5" />, href: "mailto:contact@blinkspeech.com" }
@@ -115,9 +115,9 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>© 2024 Blink Speech. All rights reserved.</span>
+              <span>© 2025 Blink Speech. All rights reserved.</span>
               <span>•</span>
-              <span>Made with <Heart className="w-4 h-4 inline text-red-400" /> for accessibility</span>
+              <span>Made with <Heart className="w-4 h-4 inline text-red-400" /> for accessibility from Team Hawkeye</span>
             </div>
             
             <div className="flex gap-6 text-sm">

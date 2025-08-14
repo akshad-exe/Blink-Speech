@@ -24,7 +24,7 @@ This guide will walk you through setting up Blink Speech for development and pro
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/atharhive/Blink-Speech.git
+git clone https://github.com/akshad-exe/Blink-Speech.git
 cd Blink-Speech
 ```
 
