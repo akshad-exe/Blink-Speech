@@ -75,7 +75,6 @@ const Session = () => {
   const {
     videoRef,
     isInitialized,
-    testDetection,
     startCamera,
     stopCamera,
     resetDetection

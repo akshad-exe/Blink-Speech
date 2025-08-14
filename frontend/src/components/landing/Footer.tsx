@@ -1,5 +1,4 @@
-import { Heart, Github, Twitter, Linkedin, Mail, Eye, Globe, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Heart, Github, Twitter, Linkedin, Mail, Eye } from "lucide-react";
 
 const Footer = () => {
   const footerLinks = {
