@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import Header from "@/components/landing/Header";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { GestureGrid } from "@/components/session/GestureGrid";
 import { PhrasePreview } from "@/components/session/PhrasePreview";
 import { MappingEditor } from "@/components/session/MappingEditor";
-import { Settings, Mic, MicOff, RotateCcw, Eye, EyeOff } from "lucide-react";
+import { Settings, Mic, MicOff, RotateCcw, Eye, EyeOff, Camera, Play, Square } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGestureSpeech } from "@/hooks/useGestureSpeech";
 
@@ -35,7 +34,6 @@ const Session = () => {
   const {
     videoRef,
     isInitialized,
-    isDetecting,
     testDetection,
     startCamera,
     stopCamera,
@@ -62,7 +60,16 @@ const Session = () => {
   const requestCameraPermission = async (): Promise<boolean> => {
     try {
       setCameraPermission('pending');
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      
+      // Request camera permission with specific constraints
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user'
+        } 
+      });
+      
       setCameraPermission('granted');
       
       if (videoRef.current) {
@@ -75,13 +82,6 @@ const Session = () => {
       setCameraPermission('denied');
       return false;
     }
-  };
-
-  // Debug camera permission
-  const debugCameraPermission = () => {
-    console.log('Camera permission state:', cameraPermission);
-    console.log('Video ref:', videoRef.current);
-    console.log('Media devices:', navigator.mediaDevices);
   };
 
   // Handle mapping updates
@@ -139,133 +139,23 @@ const Session = () => {
 
   return (
     <div className="min-h-screen bg-gradient-gentle">
-      <Header />
-      
-      <main className="p-6 pt-24">
-        {/* Camera video element - always visible when camera permission is granted */}
-        {showCamera && cameraPermission === 'granted' && (
-          <div className="fixed top-20 right-4 z-50">
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              className="rounded-lg border shadow-lg"
-              width={320}
-              height={240}
-            />
-          </div>
-        )}
-
-        {/* Camera permission request */}
-        {showCamera && cameraPermission === 'denied' && (
-          <div className="fixed top-4 left-4 z-50 bg-red-500 text-white p-3 rounded-lg shadow-lg">
-            <div className="text-sm font-medium">Camera Access Required</div>
-            <div className="text-xs opacity-90">Please allow camera access</div>
-            <div className="flex gap-2 mt-2">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs"
-                onClick={requestCameraPermission}
-              >
-                Grant Permission
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs"
-                onClick={() => {
-                  setCameraPermission('pending');
-                  setTimeout(() => requestCameraPermission(), 100);
-                }}
-              >
-                Refresh
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs"
-                onClick={debugCameraPermission}
-              >
-                Debug
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs"
-                onClick={async () => {
-                  console.log('Direct getUserMedia test...');
-                  try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    console.log('Direct test successful!');
-                    stream.getTracks().forEach(track => track.stop());
-                    toast({
-                      title: "Direct Test Success",
-                      description: "Camera permission dialog appeared",
-                    });
-                  } catch (error: unknown) {
-                    console.error('Direct test failed:', error);
-                    toast({
-                      title: "Direct Test Failed",
-                      description: error instanceof Error ? error.message : String(error),
-                      variant: "destructive"
-                    });
-                  }
-                }}
-              >
-                Test Direct
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs"
-                onClick={() => {
-                  console.log('Resetting permission state...');
-                  setCameraPermission('pending');
-                  toast({
-                    title: "Permission Reset",
-                    description: "Permission state reset. Try granting permission again.",
-                  });
-                }}
-              >
-                Reset State
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs"
-                onClick={testDetection}
-                disabled={!isInitialized}
-              >
-                Test Detection
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {showCamera && cameraPermission === 'pending' && (
-          <div className="fixed top-4 left-4 z-50 bg-yellow-500 text-white p-3 rounded-lg shadow-lg">
-            <div className="text-sm font-medium">Requesting Camera...</div>
-            <div className="text-xs opacity-90">Please allow camera access</div>
-          </div>
-        )}
-
+      <main className="pt-6">
         {/* Desktop Layout */}
-        <div className="hidden lg:block">
-          <div className="flex items-center justify-between mb-6">
+        <div className="hidden lg:block px-6 lg:px-8 xl:px-12">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Active Session</h1>
-              <p className="text-muted-foreground">Blink patterns ready to communicate</p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Active Session</h1>
+              <p className="text-lg text-muted-foreground">Blink patterns ready to communicate</p>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-lg border border-border/20">
+                <div className={`w-3 h-3 rounded-full animate-pulse ${
                   !isInitialized ? 'bg-yellow-500' : 
                   cameraPermission !== 'granted' ? 'bg-red-500' :
                   isDetectionActive ? 'bg-green-500' : 'bg-gray-500'
                 }`} />
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm font-medium text-foreground">
                   {!isInitialized ? 'Initializing...' : 
                    cameraPermission !== 'granted' ? 'Camera Required' :
                    isDetectionActive ? 'Detection Active' : 'Ready to Start'}
@@ -276,7 +166,7 @@ const Session = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={toggleSpeech}
-                className="gap-2"
+                className="gap-2 hover:bg-white/80 transition-colors"
               >
                 {isSpeechEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
                 {isSpeechEnabled ? "Speech" : "Mute"}
@@ -286,7 +176,7 @@ const Session = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={() => setAutoSpeak(!autoSpeak)}
-                className={`gap-2 ${autoSpeak ? 'bg-primary/10 border-primary/30' : ''}`}
+                className={`gap-2 transition-colors ${autoSpeak ? 'bg-primary/10 border-primary/30 hover:bg-primary/20' : 'hover:bg-white/80'}`}
                 disabled={!isSpeechEnabled}
               >
                 {autoSpeak ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -297,9 +187,9 @@ const Session = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={() => setShowCamera(!showCamera)}
-                className="gap-2"
+                className="gap-2 hover:bg-white/80 transition-colors"
               >
-                {showCamera ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                {showCamera ? <Camera className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 Camera
               </Button>
               
@@ -307,10 +197,10 @@ const Session = () => {
                 variant={isDetectionActive ? "destructive" : "default"}
                 size="sm" 
                 onClick={toggleDetection}
-                className="gap-2"
+                className={`gap-2 font-semibold ${!isDetectionActive ? 'bg-primary hover:bg-primary/90 text-white shadow-lg' : ''}`}
                 disabled={!isInitialized}
               >
-                {isDetectionActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {isDetectionActive ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 {isDetectionActive ? "Stop" : "Start"}
               </Button>
               
@@ -324,7 +214,7 @@ const Session = () => {
                       speechSynthesis.speak(utterance);
                     }
                   }}
-                  className="gap-2"
+                  className="gap-2 hover:bg-white/80 transition-colors"
                   disabled={!isSpeechEnabled}
                 >
                   <Mic className="w-4 h-4" />
@@ -336,7 +226,7 @@ const Session = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={recalibrate}
-                className="gap-2"
+                className="gap-2 hover:bg-white/80 transition-colors"
               >
                 <RotateCcw className="w-4 h-4" />
                 Calibrate
@@ -346,7 +236,7 @@ const Session = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={() => setShowMappingEditor(!showMappingEditor)}
-                className="gap-2"
+                className="gap-2 hover:bg-white/80 transition-colors"
               >
                 <Settings className="w-4 h-4" />
                 Edit Mappings
@@ -356,7 +246,7 @@ const Session = () => {
         </div>
 
         {/* Mobile Layout */}
-        <div className="lg:hidden space-y-4 mb-6">
+        <div className="lg:hidden space-y-4 mb-6 px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold text-foreground">Active Session</h1>
@@ -400,7 +290,7 @@ const Session = () => {
               onClick={() => setShowCamera(!showCamera)}
               className="gap-1 text-xs"
             >
-              {showCamera ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              {showCamera ? <Camera className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
               Camera
             </Button>
             
@@ -411,7 +301,7 @@ const Session = () => {
               className="gap-1 text-xs"
               disabled={!isInitialized}
             >
-              {isDetectionActive ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+              {isDetectionActive ? <Square className="w-3 h-3" /> : <Play className="w-4 h-4" />}
               {isDetectionActive ? "Stop" : "Start"}
             </Button>
             
@@ -461,7 +351,53 @@ const Session = () => {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto space-y-6">
+        {/* Camera video element - always visible when camera permission is granted */}
+        {showCamera && cameraPermission === 'granted' && (
+          <div className="fixed top-20 right-4 z-50">
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              className="rounded-lg border shadow-lg"
+              width={320}
+              height={240}
+            />
+          </div>
+        )}
+
+        {/* Camera permission request */}
+        {showCamera && cameraPermission === 'denied' && (
+          <div className="fixed bottom-6 right-6 z-50 bg-red-600 text-white p-4 rounded-lg shadow-xl max-w-xs">
+            <div className="text-sm font-semibold mb-2">Camera Access Required</div>
+            <div className="text-xs opacity-90 mb-4">Please allow camera access to use Blink Speech</div>
+            <div className="flex flex-col gap-2">
+              <Button 
+                size="sm" 
+                className="bg-white text-red-600 hover:bg-gray-100 font-medium"
+                onClick={requestCameraPermission}
+              >
+                Allow Camera Access
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-white border-white hover:bg-white hover:text-red-600"
+                onClick={() => setShowCamera(false)}
+              >
+                Hide Camera
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {showCamera && cameraPermission === 'pending' && (
+          <div className="fixed bottom-6 right-6 z-50 bg-yellow-600 text-white p-4 rounded-lg shadow-xl max-w-xs">
+            <div className="text-sm font-semibold mb-2">Requesting Camera Access</div>
+            <div className="text-xs opacity-90">Please check your browser for the permission dialog</div>
+          </div>
+        )}
+
+        <div className="max-w-6xl mx-auto space-y-6 p-6 bg-white/40 backdrop-blur-sm rounded-xl border border-white/20 mx-6 lg:mx-8 xl:mx-12">
           <PhrasePreview 
             currentPhrase={currentPhrase}
             detectedGesture={detectedGesture}
