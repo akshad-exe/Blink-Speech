@@ -134,11 +134,11 @@ Blink Speech was born from a simple yet powerful belief: **communication is a fu
 
 ## 👥 **Team**
 
-| Role | Name | GitHub | Expertise |
-|------|------|---------|----------|
-| 🧠 **Project Lead** | Md Athar Jamal Makki | [@atharhive](https://github.com/atharhive) | Full-stack development, Computer vision |
-| 🎨 **Frontend Lead** | Akshad Jogi | [@akshad-exe](https://github.com/akshad-exe) | React, UI/UX, Accessibility |
-| 🛠️ **Backend Lead** | Ayush Sarkar | [@dev-Ninjaa](https://github.com/dev-Ninjaa) | API development, Database design |
+| Role | Name | GitHub | 
+|------|------|---------|
+| 🧠 **Project Lead** | Md Athar Jamal Makki | [@atharhive](https://github.com/atharhive) |
+| 🎨 **Frontend Lead** | Akshad Jogi | [@akshad-exe](https://github.com/akshad-exe) |
+| 🛠️ **Backend Lead** | Ayush Sarkar | [@dev-Ninjaa](https://github.com/dev-Ninjaa) | 
 ---
 
 ## 🎯 **How It Works**
