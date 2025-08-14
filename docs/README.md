@@ -21,7 +21,7 @@ This documentation is organized into the following sections:
 ### 💻 **Development**
 - [**Development Guide**](./development-guide.md) - Developer setup, workflows, and contribution guidelines
 - [**Gesture Detection**](./gesture-detection.md) - Computer vision implementation and algorithms
-- [**Speech Synthesis**](./speech-synthesis.md) - Text-to-speech implementation details
+<!-- - [**Speech Synthesis**](./speech-synthesis.md) - Text-to-speech implementation details -->
 
 ### 🚀 **Deployment & Operations**
 - [**Deployment Guide**](./deployment.md) - Production deployment instructions
