@@ -4,9 +4,23 @@
 
 Blink Speech is a revolutionary browser-based assistive communication application that transforms eye blink patterns and gaze gestures into spoken phrases using advanced computer vision and speech synthesis. Built with modern web technologies, it operates entirely client-side to ensure maximum privacy and accessibility.
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Try_Now-brightgreen?style=for-the-badge)](https://blink-speech.vercel.app)
+[![Demo Video](https://img.shields.io/badge/�_Demo-Watch_Video-brightgreen?style=for-the-badge)](https://youtu.be/evakcT6qGRI)
 [![Documentation](https://img.shields.io/badge/📚_Documentation-Read_Docs-blue?style=for-the-badge)](./docs/README.md)
+[![Live Site](https://img.shields.io/badge/🌐_Live_Site-Open_App-brightgreen?style=for-the-badge)](https://blink-speech.vercel.app)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
+
+---
+
+## 📊 **Project Stats**
+
+![GitHub stars](https://img.shields.io/github/stars/akshad-exe/Blink-Speech?style=social)
+![GitHub forks](https://img.shields.io/github/forks/akshad-exe/Blink-Speech?style=social)
+![GitHub issues](https://img.shields.io/github/issues/akshad-exe/Blink-Speech)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/akshad-exe/Blink-Speech)
+![GitHub last commit](https://img.shields.io/github/last-commit/akshad-exe/Blink-Speech)
+![GitHub code size](https://img.shields.io/github/languages/code-size/akshad-exe/Blink-Speech)
+
+---
 
 ## ✨ **Key Features**
 
@@ -72,7 +86,7 @@ Blink Speech was born from a simple yet powerful belief: **communication is a fu
 ## 🚀 **Quick Start**
 
 ### **For Users**
-1. **📱 Try the Live Demo**: [blink-speech.vercel.app](https://blink-speech.vercel.app)
+1. **📱 Try the Demo Video**: [YouTube Demo](https://youtu.be/evakcT6qGRI)
 2. **📖 Read the User Guide**: [Complete usage instructions](./docs/user-guide.md)
 3. **🎯 Complete Calibration**: Follow the 5-point setup for optimal accuracy
 4. **🗣️ Start Communicating**: Use blinks and gaze to speak!
@@ -343,17 +357,6 @@ For urgent accessibility needs or critical bugs affecting communication:
 - Accessibility advocates who guided our design decisions
 - Healthcare institutions that shared use case requirements
 - Open source contributors who helped improve the codebase
-
----
-
-## 📊 **Project Stats**
-
-![GitHub stars](https://img.shields.io/github/stars/akshad-exe/Blink-Speech?style=social)
-![GitHub forks](https://img.shields.io/github/forks/akshad-exe/Blink-Speech?style=social)
-![GitHub issues](https://img.shields.io/github/issues/akshad-exe/Blink-Speech)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/akshad-exe/Blink-Speech)
-![GitHub last commit](https://img.shields.io/github/last-commit/akshad-exe/Blink-Speech)
-![GitHub code size](https://img.shields.io/github/languages/code-size/akshad-exe/Blink-Speech)
 
 ---
 
