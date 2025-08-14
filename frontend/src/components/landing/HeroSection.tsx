@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Eye, Mic, Heart, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
 
 const HeroSection = () => {
-  const handleStartSession = () => {
-    // TODO: Navigate to calibration page
-    console.log("Starting session...");
+  const navigate = useNavigate();
+  
+  const handleGetStarted = () => {
+    navigate('/calibration');
   };
 
   return (
@@ -40,18 +42,18 @@ const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                variant="hero" 
-                size="xl" 
-                onClick={handleStartSession}
-                className="group"
-              >
+            <Button 
+              variant="default" 
+              size="lg" 
+              onClick={handleGetStarted}
+              className="group"
+            >
                 <Eye className="w-6 h-6" />
                 Start Your Session
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
-              <Button variant="gentle" size="xl">
+              <Button variant="outline" size="lg">
                 <Mic className="w-6 h-6" />
                 Learn How It Works
               </Button>
@@ -90,10 +92,10 @@ const HeroSection = () => {
             <div className="relative">
               <img 
                 src={heroImage} 
-                alt="People communicating through eye contact and expressions"
-                className="w-full h-auto rounded-2xl shadow-warm"
+                alt="Assistive communication technology"
+                className="w-full h-auto rounded-2xl shadow-lg"
               />
-              <div className="absolute inset-0 bg-gradient-warm opacity-10 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
             </div>
             
             {/* Floating elements */}

@@ -29,17 +29,44 @@ const Session = () => {
     "doubleBlink_lookUp": "Water please",
     "doubleBlink_lookDown": "I'm tired"
   });
+  
+  // Debug mapping changes
+  useEffect(() => {
+    console.log('Current gesture mapping:', gestureMapping);
+  }, [gestureMapping]);
 
   useEffect(() => {
-    // Check if calibration exists
+    // Check if we're on HTTPS (required for camera access in production)
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      console.warn('Camera access may require HTTPS in production environments');
+      // Only show warning in production, not error
+      if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        toast({
+          title: "HTTPS Recommended",
+          description: "Camera access works best with HTTPS in production",
+          variant: "default"
+        });
+      }
+    }
+    
+    // Check if calibration exists, create default if missing
     const calibrationData = localStorage.getItem('blinkSpeechCalibration');
     if (!calibrationData) {
+      // Create default calibration for immediate testing
+      const defaultCalibration = {
+        centerX: 320, // Center of a 640px wide camera
+        centerY: 240, // Center of a 480px high camera  
+        threshold: 100,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('blinkSpeechCalibration', JSON.stringify(defaultCalibration));
+      console.log('Default calibration created for testing:', defaultCalibration);
+      
       toast({
-        title: "Calibration Required",
-        description: "Please complete calibration first",
-        variant: "destructive"
+        title: "Default Calibration Set",
+        description: "Using default calibration - you can recalibrate later for better accuracy",
+        variant: "default"
       });
-      navigate('/calibration');
     }
 
     // Load saved mapping
@@ -88,7 +115,7 @@ const Session = () => {
       if (permissions.state === 'granted') {
         console.log('Permission already granted');
         setCameraPermission('granted');
-        return;
+        return true;
       }
       
       console.log('Requesting getUserMedia...');
@@ -111,6 +138,7 @@ const Session = () => {
         title: "Camera Access Granted",
         description: "Camera is now ready for gesture detection",
       });
+      return true;
     } catch (error) {
       console.error('Camera permission denied:', error);
       setCameraPermission('denied');
@@ -119,6 +147,7 @@ const Session = () => {
         description: "Please allow camera access to use gesture detection",
         variant: "destructive"
       });
+      return false;
     }
   };
 
@@ -196,28 +225,71 @@ const Session = () => {
     }
   };
 
-  // Initialize gesture speech detection (disabled by default)
-  const { videoRef, isInitialized, isDetecting, testDetection, resetDetection } = useGestureSpeech(
-    isDetectionActive ? gestureMapping : {}, // Only pass mapping when detection is active
+  // Initialize gesture speech detection - always pass the mapping
+  const { videoRef, isInitialized, isDetecting, testDetection, resetDetection, startCamera, stopCamera } = useGestureSpeech(
+    gestureMapping, // Always pass the mapping
     {
       onGestureDetected: (gesture) => {
+        // Only process if detection is active
+        if (!isDetectionActive) {
+          console.log('Gesture detected but detection not active:', gesture);
+          return;
+        }
+        
         console.log('Gesture detected in Session:', gesture);
         setDetectedGesture(gesture);
         const phrase = gestureMapping[gesture as keyof typeof gestureMapping];
+        console.log('Mapped phrase for gesture', gesture, ':', phrase);
+        
         if (phrase) {
           setCurrentPhrase(phrase);
-          // Only speak if speech is enabled and auto-speak is on
-          if (isSpeechEnabled && autoSpeak && 'speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(phrase);
-            speechSynthesis.speak(utterance);
+          // Speak if speech is enabled
+          if (isSpeechEnabled && 'speechSynthesis' in window) {
+            try {
+              speechSynthesis.cancel(); // Cancel any ongoing speech
+              const utterance = new SpeechSynthesisUtterance(phrase);
+              utterance.rate = 0.9; // Slightly slower for clarity
+              utterance.volume = 0.8;
+              utterance.onstart = () => console.log('Speech started:', phrase);
+              utterance.onend = () => console.log('Speech ended:', phrase);
+              utterance.onerror = (e) => console.error('Speech error:', e);
+              speechSynthesis.speak(utterance);
+              console.log('Speaking phrase:', phrase);
+            } catch (error) {
+              console.error('Speech synthesis error:', error);
+            }
+          } else {
+            console.log('Speech disabled or not supported');
           }
+        } else {
+          console.warn('No phrase mapped for gesture:', gesture);
         }
       },
       onPhraseSpoken: (phrase) => {
         // Don't auto-speak, let the onGestureDetected handle it
-      }
+      },
+      isActive: isDetectionActive // Pass active state to hook
     }
   );
+  
+  // Start camera as soon as permission is granted and initialized
+  useEffect(() => {
+    if (cameraPermission === 'granted' && isInitialized && videoRef.current) {
+      console.log('Camera permission granted, starting camera...');
+      startCamera().then(success => {
+        if (!success) {
+          console.log('Failed to start camera');
+          toast({
+            title: "Camera Error",
+            description: "Failed to start camera. Please check your camera settings.",
+            variant: "destructive"
+          });
+        } else {
+          console.log('Camera started successfully');
+        }
+      });
+    }
+  }, [cameraPermission, isInitialized, videoRef]);
 
   return (
     <div className="min-h-screen bg-gradient-gentle">
@@ -278,18 +350,23 @@ const Session = () => {
               <Button 
                 variant={isDetectionActive ? "destructive" : "default"}
                 size="sm" 
-                onClick={() => {
+                onClick={async () => {
                   if (isDetectionActive) {
                     setIsDetectionActive(false);
                     resetDetection();
                     setDetectedGesture("");
                     setCurrentPhrase("");
                   } else {
+                    // Check permission first
+                    if (cameraPermission !== 'granted') {
+                      const granted = await requestCameraPermission();
+                      if (!granted) return;
+                    }
                     setIsDetectionActive(true);
                   }
                 }}
                 className="gap-2"
-                disabled={cameraPermission !== 'granted' || !isInitialized}
+                disabled={!isInitialized}
               >
                 {isDetectionActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 {isDetectionActive ? "Stop Detection" : "Start Detection"}
@@ -387,18 +464,23 @@ const Session = () => {
               <Button 
                 variant={isDetectionActive ? "destructive" : "default"}
                 size="sm" 
-                onClick={() => {
+                onClick={async () => {
                   if (isDetectionActive) {
                     setIsDetectionActive(false);
                     resetDetection();
                     setDetectedGesture("");
                     setCurrentPhrase("");
                   } else {
+                    // Check permission first
+                    if (cameraPermission !== 'granted') {
+                      const granted = await requestCameraPermission();
+                      if (!granted) return;
+                    }
                     setIsDetectionActive(true);
                   }
                 }}
                 className="gap-1 text-xs"
-                disabled={cameraPermission !== 'granted' || !isInitialized}
+                disabled={!isInitialized}
               >
                 {isDetectionActive ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                 {isDetectionActive ? "Stop" : "Start"}
@@ -453,32 +535,43 @@ const Session = () => {
       </header>
 
       <main className="p-6">
-        {/* Camera video element for gesture detection */}
-        {showCamera && cameraPermission === 'granted' && isDetectionActive && (
-          <div className="fixed top-4 left-4 z-50">
+        {/* Camera video element - always visible when camera permission is granted */}
+        {showCamera && cameraPermission === 'granted' && (
+          <div className="fixed top-20 right-4 z-50">
             <video
               ref={videoRef}
               autoPlay
               muted
               playsInline
-              className="w-48 h-36 rounded-lg border-2 border-primary/20 shadow-lg bg-black"
+              className="w-64 h-48 rounded-lg border-2 border-primary/20 shadow-lg bg-black"
               style={{ objectFit: 'cover' }}
             />
-            <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-2 py-1 rounded">
-              Camera
+            <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+              Camera Feed
             </div>
-            <div className={`absolute bottom-1 left-1 px-2 py-1 rounded text-xs ${
-              isDetecting ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'
+            <div className={`absolute bottom-2 left-2 px-2 py-1 rounded text-xs font-medium ${
+              isDetectionActive && isDetecting ? 'bg-green-500 text-white' : 
+              isDetectionActive ? 'bg-yellow-500 text-white' : 
+              'bg-gray-500 text-white'
             }`}>
-              {isDetecting ? 'Detecting' : 'Ready'}
+              {isDetectionActive && isDetecting ? 'Detecting' : 
+               isDetectionActive ? 'Starting...' : 
+               'Inactive'}
             </div>
             
-            {/* Debug info */}
-            <div className="absolute -right-2 top-0 bg-black/80 text-white text-xs p-2 rounded">
-              <div>Init: {isInitialized ? '✓' : '✗'}</div>
-              <div>Detect: {isDetecting ? '✓' : '✗'}</div>
-              <div>Gesture: {detectedGesture || 'None'}</div>
+            {/* Status indicators */}
+            <div className="absolute top-2 right-2 flex gap-1">
+              <div className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-green-500' : 'bg-red-500'}`} title="Initialized" />
+              <div className={`w-2 h-2 rounded-full ${cameraPermission === 'granted' ? 'bg-green-500' : 'bg-red-500'}`} title="Camera Permission" />
+              <div className={`w-2 h-2 rounded-full ${isDetectionActive ? 'bg-green-500' : 'bg-gray-500'}`} title="Detection Active" />
             </div>
+            
+            {/* Current gesture indicator */}
+            {detectedGesture && (
+              <div className="absolute bottom-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded animate-pulse">
+                {detectedGesture}
+              </div>
+            )}
           </div>
         )}
         

@@ -67,8 +67,8 @@ const GetStartedSection = () => {
           {/* CTA */}
           <div className="space-y-4">
             <Button 
-              variant="hero" 
-              size="xl" 
+              variant="default" 
+              size="lg" 
               onClick={handleStartSession}
               className="group"
             >

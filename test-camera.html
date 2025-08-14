@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Test</title>
+</head>
+<body>
+    <h1>Camera Permission Test</h1>
+    <button onclick="testCamera()">Test Camera Access</button>
+    <video id="video" width="320" height="240" autoplay muted playsInline style="border: 1px solid #ccc; margin: 20px 0;"></video>
+    <div id="status"></div>
+
+    <script>
+        async function testCamera() {
+            const status = document.getElementById('status');
+            const video = document.getElementById('video');
+            
+            status.innerHTML = 'Testing camera access...';
+            
+            try {
+                console.log('Protocol:', window.location.protocol);
+                console.log('Host:', window.location.host);
+                
+                // Check permission first
+                const permissions = await navigator.permissions.query({ name: 'camera' });
+                console.log('Permission state:', permissions.state);
+                
+                // Request camera access
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                        facingMode: 'user'
+                    }
+                });
+                
+                video.srcObject = stream;
+                status.innerHTML = 'Camera access successful! ✓';
+                status.style.color = 'green';
+                
+            } catch (error) {
+                console.error('Camera access failed:', error);
+                status.innerHTML = `Camera access failed: ${error.message}`;
+                status.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>
